@@ -57,65 +57,93 @@ class _MainNavigationState extends State<MainNavigation> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _screens[_currentIndex],
-      bottomNavigationBar: Stack(
-        alignment: Alignment.bottomCenter,
-        children: [
-          BottomNavigationBar(
-            type: BottomNavigationBarType.fixed,
-            currentIndex: _currentIndex,
-            onTap: (index) {
-              // Prevent tapping the placeholder (center)
-              if (index == 2) return;
-              setState(() => _currentIndex = index);
-            },
-            items: const [
-              BottomNavigationBarItem(icon: Icon(Icons.person), label: 'حسابي'),
-              BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'آشو شات'),
-              BottomNavigationBarItem(
-                  icon: SizedBox.shrink(), label: ''), // Center placeholder
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.add_box), label: 'إضافة منتج'),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.store), label: 'منتجاتي'),
-            ],
-          ),
-          // Center Home Button
-          Positioned(
-            bottom: 0,
-            child: GestureDetector(
-              onTap: () => setState(() => _currentIndex = 2),
-              child: Container(
-                height: 72,
-                width: 72,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary,
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Theme.of(context).colorScheme.secondary,
-                    width: 4,
+      extendBody: true,
+      bottomNavigationBar: SizedBox(
+        height: 90,
+        child: Stack(
+          clipBehavior: Clip.none,
+          alignment: Alignment.bottomCenter,
+          children: [
+            Container(
+              margin: const EdgeInsets.only(bottom: 18, left: 16, right: 16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 18,
+                    offset: const Offset(0, 4),
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.12),
-                      blurRadius: 10,
-                    ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Icon(Icons.home_rounded, color: Colors.white, size: 38),
-                    SizedBox(height: 2),
-                    Text('الرئيسية',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold)),
+                ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _buildNavItem(Icons.person, 'حسابي', 0, _currentIndex == 0),
+                    _buildNavItem(Icons.chat, 'آشو شات', 1, _currentIndex == 1),
+                    const SizedBox(width: 72), // مكان زر الرئيسية
+                    _buildNavItem(
+                        Icons.add_box, 'إضافة منتج', 3, _currentIndex == 3),
+                    _buildNavItem(
+                        Icons.store, 'منتجاتي', 4, _currentIndex == 4),
                   ],
                 ),
               ),
             ),
-          ),
+            // زر الرئيسية الدائري المرتفع والعائم بدون إطار برتقالي
+            Positioned(
+              top: -28,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: GestureDetector(
+                  onTap: () => setState(() => _currentIndex = 2),
+                  child: Container(
+                    height: 64,
+                    width: 64,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF19345E),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.13),
+                          blurRadius: 16,
+                        ),
+                      ],
+                    ),
+                    child: const Icon(Icons.home_rounded,
+                        color: Colors.white, size: 32),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem(IconData icon, String label, int index, bool isActive) {
+    final activeColor = const Color(0xFF19345E);
+    final inactiveColor = Colors.blueGrey.shade600;
+    return GestureDetector(
+      onTap: () {
+        if (index == 2) return;
+        setState(() => _currentIndex = index);
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: isActive ? activeColor : inactiveColor, size: 26),
+          const SizedBox(height: 2),
+          Text(label,
+              style: TextStyle(
+                  color: isActive ? activeColor : inactiveColor,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600)),
         ],
       ),
     );
