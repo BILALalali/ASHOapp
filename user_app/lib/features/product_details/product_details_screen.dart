@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/product.dart';
+import '../../models/chat.dart';
+import '../../services/chat_service.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
   final Product product;
@@ -142,7 +144,20 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   ),
                 ),
                 onPressed: () {
-                  // TODO: تنفيذ عملية الشراء أو فتح المحادثة
+                  // إضافة دردشة جديدة
+                  final chat = Chat(
+                    id: DateTime.now().millisecondsSinceEpoch.toString(),
+                    productImage: widget.product.imageUrl,
+                    productName: widget.product.name,
+                    buyerName:
+                        'المستخدم الحالي', // استبدلها باسم المستخدم الفعلي عند الربط
+                    buyerId: 'user_id', // استبدلها بمعرف المستخدم الفعلي
+                    unreadCount: 1,
+                    status: ChatStatus.pending,
+                  );
+                  ChatService().addChat(chat);
+                  // الانتقال إلى شاشة الدردشة
+                  Navigator.of(context).pushNamed('/chat');
                 },
                 child: const Text(
                   'شراء',

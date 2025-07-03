@@ -28,6 +28,9 @@ class UserApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
+      routes: {
+        '/chat': (_) => const ChatScreen(),
+      },
     );
   }
 }
