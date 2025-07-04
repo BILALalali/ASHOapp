@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import '../../models/user.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import '../../core/theme.dart';
 
 class AccountScreen extends StatefulWidget {
-  const AccountScreen({Key? key}) : super(key: key);
+  final bool isSeller;
+  const AccountScreen({Key? key, this.isSeller = false}) : super(key: key);
 
   @override
   State<AccountScreen> createState() => _AccountScreenState();
@@ -12,21 +14,28 @@ class AccountScreen extends StatefulWidget {
 
 class _AccountScreenState extends State<AccountScreen> {
   // بيانات المستخدم التجريبية
-  User user = User(
-    id: '1',
-    name: 'أحمد محمد',
-    avatarUrl: '',
-    email: 'ahmed@example.com',
-    phone: '+966 50 123 4567',
-    isSeller: false,
-  );
-  String accountType = 'مشتري';
+  late User user;
+  String accountType = '';
   DateTime registrationDate = DateTime(2024, 1, 15);
   int ordersCount = 5;
 
   // صورة مؤقتة
   ImageProvider? _avatarImage;
   final ImagePicker _picker = ImagePicker();
+
+  @override
+  void initState() {
+    super.initState();
+    user = User(
+      id: '1',
+      name: 'أحمد محمد',
+      avatarUrl: '',
+      email: 'ahmed@example.com',
+      phone: '+966 50 123 4567',
+      isSeller: widget.isSeller,
+    );
+    accountType = widget.isSeller ? 'بائع' : 'مشتري';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -165,6 +174,31 @@ class _AccountScreenState extends State<AccountScreen> {
                                         color: Colors.blueGrey, fontSize: 15)),
                               ],
                             ),
+                            if (user.isSeller) ...[
+                              const SizedBox(height: 16),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 8),
+                                decoration: BoxDecoration(
+                                  color: Colors.green.shade50,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border:
+                                      Border.all(color: Colors.green.shade300),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.verified,
+                                        color: Colors.green, size: 20),
+                                    const SizedBox(width: 8),
+                                    Text('حساب بائع مفعل',
+                                        style: TextStyle(
+                                            color: Colors.green.shade800,
+                                            fontWeight: FontWeight.bold)),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ],
                         ),
                       ),
@@ -194,21 +228,48 @@ class _AccountScreenState extends State<AccountScreen> {
                           ),
                         ),
                         const SizedBox(height: 12),
+                        if (!user.isSeller)
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFFFFA726),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16)),
+                                elevation: 3,
+                              ),
+                              icon:
+                                  const Icon(Icons.store, color: Colors.white),
+                              label: const Text('طلب الترقية لحساب بائع',
+                                  style: TextStyle(
+                                      fontSize: 16, color: Colors.white)),
+                              onPressed: _showUpgradeDialog,
+                            ),
+                          ),
+                        const SizedBox(height: 12),
+                        // زر تسجيل الخروج
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton.icon(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFFFA726),
-                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              backgroundColor: Colors.red.shade600,
+                              padding: const EdgeInsets.symmetric(vertical: 15),
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(16)),
-                              elevation: 3,
+                              elevation: 2,
                             ),
-                            icon: const Icon(Icons.store, color: Colors.white),
-                            label: const Text('طلب الترقية لحساب بائع',
+                            icon: const Icon(Icons.logout, color: Colors.white),
+                            label: const Text('تسجيل الخروج',
                                 style: TextStyle(
                                     fontSize: 16, color: Colors.white)),
-                            onPressed: _showUpgradeDialog,
+                            onPressed: () {
+                              Navigator.of(context).pushNamedAndRemoveUntil(
+                                '/login',
+                                (route) => false,
+                              );
+                            },
                           ),
                         ),
                       ],
