@@ -7,7 +7,7 @@ class AdminAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: const Text('لوحة تحكم آشو'),
+      title: const Text('Asho_admen'),
     );
   }
 

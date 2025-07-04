@@ -6,8 +6,9 @@ class ReportsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(child: Text('التقارير والإحصائيات')), // سيتم التطوير لاحقًا
+    return const Center(
+      child: Text('التقارير والإحصائيات',
+          style: TextStyle(fontSize: 22, color: Color(0xFF193A6B))),
     );
   }
 }

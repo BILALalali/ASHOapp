@@ -6,8 +6,9 @@ class AdsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(child: Text('إدارة الإعلانات')), // سيتم التطوير لاحقًا
+    return const Center(
+      child: Text('نظام الإعلانات',
+          style: TextStyle(fontSize: 22, color: Color(0xFF193A6B))),
     );
   }
 }

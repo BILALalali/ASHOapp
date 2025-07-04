@@ -6,8 +6,9 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(child: Text('لوحة المعلومات')), // سيتم التطوير لاحقًا
+    return const Center(
+      child: Text('لوحة المعلومات',
+          style: TextStyle(fontSize: 22, color: Color(0xFF193A6B))),
     );
   }
 }
