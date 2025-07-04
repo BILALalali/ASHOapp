@@ -8,6 +8,7 @@ import 'features/add_product/add_product_screen.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'features/auth/login_screen.dart';
 import 'features/auth/signup_screen.dart';
+import 'widgets/upgrade_dialogs.dart';
 
 void main() {
   runApp(const UserApp());
@@ -65,16 +66,9 @@ class _MainNavigationState extends State<MainNavigation> {
   void _showUpgradeDialog() async {
     final upgraded = await showDialog<bool>(
       context: context,
-      builder: (context) => UpgradeDialog(
-        onUpgrade: () async {
-          final upgraded = await showDialog<bool>(
-            context: context,
-            builder: (context) => SellerPlansDialog(),
-          );
-          if (upgraded == true) {
-            setState(() => userIsSeller = true);
-            Navigator.pop(context, true);
-          }
+      builder: (context) => UpgradeToSellerDialog(
+        onPlanSelected: (plan) {
+          setState(() => userIsSeller = true);
         },
       ),
     );
@@ -199,139 +193,6 @@ class _MainNavigationState extends State<MainNavigation> {
             const SizedBox(height: 2),
           ],
         ),
-      ),
-    );
-  }
-}
-
-// Dialogات الترقية
-class UpgradeDialog extends StatelessWidget {
-  final VoidCallback onUpgrade;
-  const UpgradeDialog({super.key, required this.onUpgrade});
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      contentPadding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.store, color: Color(0xFFFF9800), size: 40),
-          const SizedBox(height: 12),
-          Text('حساب البائع مطلوب',
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                  color: Color(0xFF19345E))),
-          const SizedBox(height: 8),
-          Text(
-              'هذه الميزة متاحة فقط لحسابات البائعين. يمكنك ترقية حسابك للوصول إلى هذه الميزة.',
-              textAlign: TextAlign.center),
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: () => Navigator.pop(context, false),
-                  child: Text('لاحقًا',
-                      style: TextStyle(color: Color(0xFF19345E))),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFFF9800), // برتقالي
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                  ),
-                  onPressed: onUpgrade,
-                  child: Text('ترقية الحساب',
-                      style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold)),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class SellerPlansDialog extends StatefulWidget {
-  const SellerPlansDialog({super.key});
-  @override
-  State<SellerPlansDialog> createState() => _SellerPlansDialogState();
-}
-
-class _SellerPlansDialogState extends State<SellerPlansDialog> {
-  int? selectedPlan;
-  final plans = [
-    {'label': 'حساب تجريبي (أسبوع مجاني)', 'price': 'مجاني'},
-    {'label': 'حساب شهري', 'price': '100 رس'},
-    {'label': 'حساب سنوي', 'price': '900 رس'},
-    {'label': 'حساب دائم', 'price': '3500 رس'},
-  ];
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      contentPadding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text('اختر نوع حساب البائع',
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                  color: Color(0xFF19345E))),
-          const SizedBox(height: 8),
-          ...plans.asMap().entries.map((entry) {
-            int idx = entry.key;
-            var plan = entry.value;
-            return RadioListTile<int>(
-              value: idx,
-              groupValue: selectedPlan,
-              onChanged: (val) => setState(() => selectedPlan = val),
-              title: Text(plan['label']!),
-              subtitle: Text(plan['price']!,
-                  style: TextStyle(color: Color(0xFFFF9800))),
-              activeColor: Color(0xFFFF9800),
-            );
-          }),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: () => Navigator.pop(context, false),
-                  child:
-                      Text('إلغاء', style: TextStyle(color: Color(0xFF19345E))),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: selectedPlan != null
-                        ? Color(0xFFFF9800)
-                        : Colors.grey.shade300,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                  ),
-                  onPressed: selectedPlan != null
-                      ? () => Navigator.pop(context, true)
-                      : null,
-                  child: Text('ترقية الحساب',
-                      style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold)),
-                ),
-              ),
-            ],
-          ),
-        ],
       ),
     );
   }

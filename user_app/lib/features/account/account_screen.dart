@@ -3,6 +3,7 @@ import '../../models/user.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../../core/theme.dart';
+import '../../widgets/upgrade_dialogs.dart';
 
 class AccountScreen extends StatefulWidget {
   final bool isSeller;
@@ -450,72 +451,16 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   void _showUpgradeDialog() {
-    String? selectedType;
-    final accountOptions = [
-      {'label': 'حساب تجريبي (أسبوع مجاني)', 'price': 'مجاني'},
-      {'label': 'حساب شهري', 'price': '100 رس'},
-      {'label': 'حساب سنوي', 'price': '900 رس'},
-      {'label': 'حساب دائم', 'price': '3500 رس'},
-    ];
     showDialog(
       context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setStateDialog) => AlertDialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-          title:
-              const Text('طلب الترقية لحساب بائع', textAlign: TextAlign.center),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('يرجى اختيار نوع الحساب الذي تريد الترقية إليه:'),
-              const SizedBox(height: 10),
-              ...accountOptions.map((opt) => RadioListTile<String>(
-                    value: opt['label']!,
-                    groupValue: selectedType,
-                    onChanged: (val) =>
-                        setStateDialog(() => selectedType = val),
-                    title: Text(opt['label']!),
-                    subtitle: Text(opt['price']!),
-                  )),
-              const SizedBox(height: 8),
-              const Text(
-                'سيتم إرسال طلبك للمراجعة من قبل الإدارة. ستتلقى إشعاراً عند الموافقة على طلبك.',
-                style: TextStyle(fontSize: 13, color: Colors.grey),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('إلغاء',
-                  style: TextStyle(
-                      color: Color(0xFF19345E), fontWeight: FontWeight.bold)),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF19345E),
-                shape: const StadiumBorder(),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                elevation: 0,
-              ),
-              onPressed: selectedType == null
-                  ? null
-                  : () {
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                          content: Text('تم إرسال طلب الترقية بنجاح')));
-                    },
-              child: const Text('إرسال الطلب',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16)),
-            ),
-          ],
-        ),
+      builder: (context) => UpgradeToSellerDialog(
+        showPlans: true,
+        onPlanSelected: (plan) {
+          // يمكنك هنا تنفيذ منطق إضافي عند اختيار الخطة
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('تم إرسال طلب الترقية بنجاح')),
+          );
+        },
       ),
     );
   }
