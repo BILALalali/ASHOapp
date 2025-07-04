@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const AdmenPanelApp());
+  runApp(const AdminPanelApp());
 }
 
-class AdmenPanelApp extends StatelessWidget {
-  const AdmenPanelApp({super.key});
+class AdminPanelApp extends StatelessWidget {
+  const AdminPanelApp({super.key});
 
   @override
   Widget build(BuildContext context) {

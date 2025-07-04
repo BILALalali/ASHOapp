@@ -1,4 +1,4 @@
-name: admen_panel
+name: admin_panel
 description: Admin panel for asho_market
 publish_to: 'none'
 version: 0.1.0
