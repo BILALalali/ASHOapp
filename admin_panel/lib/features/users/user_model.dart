@@ -4,50 +4,38 @@ import 'package:flutter/material.dart';
 class User {
   final String id;
   final String name;
+  final String avatarUrl;
   final String email;
   final String phone;
-  final String accountType; // 'regular', 'premium', 'business'
+  final bool isSeller;
   final DateTime joinDate;
-  final bool isActive;
-  final String? profileImage;
-  final String? address;
-  final int productsCount;
-  final int ordersCount;
-  final double rating;
   final bool isVerified;
+  final bool hasUpgradeRequest;
 
   User({
     required this.id,
     required this.name,
+    required this.avatarUrl,
     required this.email,
     required this.phone,
-    required this.accountType,
+    required this.isSeller,
     required this.joinDate,
-    required this.isActive,
-    this.profileImage,
-    this.address,
-    required this.productsCount,
-    required this.ordersCount,
-    required this.rating,
     required this.isVerified,
+    required this.hasUpgradeRequest,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json['id'] ?? '',
       name: json['name'] ?? '',
+      avatarUrl: json['avatarUrl'] ?? '',
       email: json['email'] ?? '',
       phone: json['phone'] ?? '',
-      accountType: json['accountType'] ?? 'regular',
+      isSeller: json['isSeller'] ?? false,
       joinDate:
           DateTime.parse(json['joinDate'] ?? DateTime.now().toIso8601String()),
-      isActive: json['isActive'] ?? true,
-      profileImage: json['profileImage'],
-      address: json['address'],
-      productsCount: json['productsCount'] ?? 0,
-      ordersCount: json['ordersCount'] ?? 0,
-      rating: (json['rating'] ?? 0.0).toDouble(),
       isVerified: json['isVerified'] ?? false,
+      hasUpgradeRequest: json['hasUpgradeRequest'] ?? false,
     );
   }
 
@@ -55,75 +43,40 @@ class User {
     return {
       'id': id,
       'name': name,
+      'avatarUrl': avatarUrl,
       'email': email,
       'phone': phone,
-      'accountType': accountType,
+      'isSeller': isSeller,
       'joinDate': joinDate.toIso8601String(),
-      'isActive': isActive,
-      'profileImage': profileImage,
-      'address': address,
-      'productsCount': productsCount,
-      'ordersCount': ordersCount,
-      'rating': rating,
       'isVerified': isVerified,
+      'hasUpgradeRequest': hasUpgradeRequest,
     };
   }
 
   User copyWith({
     String? id,
     String? name,
+    String? avatarUrl,
     String? email,
     String? phone,
-    String? accountType,
+    bool? isSeller,
     DateTime? joinDate,
-    bool? isActive,
-    String? profileImage,
-    String? address,
-    int? productsCount,
-    int? ordersCount,
-    double? rating,
     bool? isVerified,
+    bool? hasUpgradeRequest,
   }) {
     return User(
       id: id ?? this.id,
       name: name ?? this.name,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
       email: email ?? this.email,
       phone: phone ?? this.phone,
-      accountType: accountType ?? this.accountType,
+      isSeller: isSeller ?? this.isSeller,
       joinDate: joinDate ?? this.joinDate,
-      isActive: isActive ?? this.isActive,
-      profileImage: profileImage ?? this.profileImage,
-      address: address ?? this.address,
-      productsCount: productsCount ?? this.productsCount,
-      ordersCount: ordersCount ?? this.ordersCount,
-      rating: rating ?? this.rating,
       isVerified: isVerified ?? this.isVerified,
+      hasUpgradeRequest: hasUpgradeRequest ?? this.hasUpgradeRequest,
     );
   }
 
-  String get accountTypeDisplay {
-    switch (accountType) {
-      case 'regular':
-        return 'عادي';
-      case 'premium':
-        return 'مميز';
-      case 'business':
-        return 'تجاري';
-      default:
-        return 'عادي';
-    }
-  }
-
-  Color get accountTypeColor {
-    switch (accountType) {
-      case 'regular':
-        return Colors.grey;
-      case 'premium':
-        return Colors.amber;
-      case 'business':
-        return Colors.blue;
-      default:
-        return Colors.grey;
-    }
-  }
+  String get accountTypeDisplay => isSeller ? 'بائع' : 'مشتري';
+  Color get accountTypeColor => isSeller ? Colors.blue : Colors.grey;
 }

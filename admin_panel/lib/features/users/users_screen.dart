@@ -18,7 +18,8 @@ class _UsersScreenState extends State<UsersScreen> {
   bool _isLoading = true;
   String? _error;
   String _searchQuery = '';
-  String _selectedFilter = 'all';
+  String _selectedType = 'all';
+  String _selectedVerify = 'all';
 
   @override
   void initState() {
@@ -61,24 +62,18 @@ class _UsersScreenState extends State<UsersScreen> {
     }
 
     // تطبيق الفلتر
-    switch (_selectedFilter) {
-      case 'active':
-        filtered = filtered.where((user) => user.isActive).toList();
-        break;
-      case 'inactive':
-        filtered = filtered.where((user) => !user.isActive).toList();
-        break;
-      case 'premium':
-        filtered =
-            filtered.where((user) => user.accountType == 'premium').toList();
-        break;
-      case 'business':
-        filtered =
-            filtered.where((user) => user.accountType == 'business').toList();
-        break;
-      case 'verified':
-        filtered = filtered.where((user) => user.isVerified).toList();
-        break;
+    if (_selectedType != 'all') {
+      filtered = filtered
+          .where((user) =>
+              _selectedType == 'buyer' ? !user.isSeller : user.isSeller)
+          .toList();
+    }
+    if (_selectedVerify != 'all') {
+      filtered = filtered
+          .where((user) => _selectedVerify == 'verified'
+              ? user.isVerified
+              : !user.isVerified)
+          .toList();
     }
 
     setState(() {
@@ -98,9 +93,6 @@ class _UsersScreenState extends State<UsersScreen> {
           'name': result.name,
           'email': result.email,
           'phone': result.phone,
-          'accountType': result.accountType,
-          'isActive': result.isActive,
-          'address': result.address,
           'isVerified': result.isVerified,
         });
 
@@ -176,35 +168,6 @@ class _UsersScreenState extends State<UsersScreen> {
     }
   }
 
-  Future<void> _toggleUserStatus(User user) async {
-    try {
-      await UsersService.toggleUserStatus(user.id, !user.isActive);
-
-      // تحديث القائمة
-      await _loadUsers();
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(user.isActive
-                ? 'تم إلغاء تفعيل المستخدم'
-                : 'تم تفعيل المستخدم'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('فشل في تغيير حالة المستخدم: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -240,28 +203,22 @@ class _UsersScreenState extends State<UsersScreen> {
                   'إجمالي المستخدمين', _users.length.toString(), Icons.people),
               const SizedBox(width: 16),
               _buildStatCard(
-                  'المستخدمين النشطين',
-                  _users.where((u) => u.isActive).length.toString(),
-                  Icons.check_circle,
-                  color: Colors.green),
-              const SizedBox(width: 16),
-              _buildStatCard(
-                  'المستخدمين المميزين',
-                  _users
-                      .where((u) => u.accountType == 'premium')
-                      .length
-                      .toString(),
-                  Icons.star,
-                  color: Colors.amber),
-              const SizedBox(width: 16),
-              _buildStatCard(
-                  'الحسابات التجارية',
-                  _users
-                      .where((u) => u.accountType == 'business')
-                      .length
-                      .toString(),
-                  Icons.business,
+                  'البائعين',
+                  _users.where((u) => u.isSeller).length.toString(),
+                  Icons.store,
                   color: Colors.blue),
+              const SizedBox(width: 16),
+              _buildStatCard(
+                  'المشترين',
+                  _users.where((u) => !u.isSeller).length.toString(),
+                  Icons.shopping_cart,
+                  color: Colors.grey),
+              const SizedBox(width: 16),
+              _buildStatCard(
+                  'المتحققين',
+                  _users.where((u) => u.isVerified).length.toString(),
+                  Icons.verified,
+                  color: Colors.green),
             ],
           ),
           const SizedBox(height: 24),
@@ -283,7 +240,7 @@ class _UsersScreenState extends State<UsersScreen> {
                   },
                 ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 12),
               Expanded(
                 child: DropdownButtonFormField<String>(
                   decoration: const InputDecoration(
@@ -291,22 +248,35 @@ class _UsersScreenState extends State<UsersScreen> {
                     contentPadding:
                         EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   ),
-                  value: _selectedFilter,
+                  value: _selectedType,
                   items: const [
-                    DropdownMenuItem(
-                        value: 'all', child: Text('جميع المستخدمين')),
-                    DropdownMenuItem(
-                        value: 'active', child: Text('النشطين فقط')),
-                    DropdownMenuItem(
-                        value: 'inactive', child: Text('غير النشطين')),
-                    DropdownMenuItem(value: 'premium', child: Text('المميزين')),
-                    DropdownMenuItem(
-                        value: 'business', child: Text('التجاريين')),
-                    DropdownMenuItem(
-                        value: 'verified', child: Text('المتحقق منهم')),
+                    DropdownMenuItem(value: 'all', child: Text('جميع الأنواع')),
+                    DropdownMenuItem(value: 'buyer', child: Text('المشترين')),
+                    DropdownMenuItem(value: 'seller', child: Text('البائعين')),
                   ],
                   onChanged: (value) {
-                    _selectedFilter = value!;
+                    _selectedType = value!;
+                    _filterUsers();
+                  },
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: DropdownButtonFormField<String>(
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    contentPadding:
+                        EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  ),
+                  value: _selectedVerify,
+                  items: const [
+                    DropdownMenuItem(value: 'all', child: Text('كل الحالات')),
+                    DropdownMenuItem(value: 'verified', child: Text('متحقق')),
+                    DropdownMenuItem(
+                        value: 'not_verified', child: Text('غير متحقق')),
+                  ],
+                  onChanged: (value) {
+                    _selectedVerify = value!;
                     _filterUsers();
                   },
                 ),
@@ -360,7 +330,6 @@ class _UsersScreenState extends State<UsersScreen> {
                                 user: user,
                                 onEdit: () => _editUser(user),
                                 onDelete: () => _deleteUser(user),
-                                onToggleStatus: () => _toggleUserStatus(user),
                               );
                             },
                           ),

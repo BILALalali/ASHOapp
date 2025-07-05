@@ -28,9 +28,6 @@ class _EditUserDialogState extends State<EditUserDialog> {
     _nameController = TextEditingController(text: widget.user.name);
     _emailController = TextEditingController(text: widget.user.email);
     _phoneController = TextEditingController(text: widget.user.phone);
-    _addressController = TextEditingController(text: widget.user.address ?? '');
-    _selectedAccountType = widget.user.accountType;
-    _isActive = widget.user.isActive;
     _isVerified = widget.user.isVerified;
   }
 
@@ -254,9 +251,6 @@ class _EditUserDialogState extends State<EditUserDialog> {
       name: _nameController.text,
       email: _emailController.text,
       phone: _phoneController.text,
-      accountType: _selectedAccountType,
-      isActive: _isActive,
-      address: _addressController.text.isEmpty ? null : _addressController.text,
       isVerified: _isVerified,
     );
 

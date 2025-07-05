@@ -5,14 +5,14 @@ class UserCard extends StatelessWidget {
   final User user;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
-  final VoidCallback onToggleStatus;
+  final VoidCallback? onUpgrade;
 
   const UserCard({
     super.key,
     required this.user,
     required this.onEdit,
     required this.onDelete,
-    required this.onToggleStatus,
+    this.onUpgrade,
   });
 
   @override
@@ -72,15 +72,10 @@ class UserCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                // مؤشر الحالة
-                Container(
-                  width: 12,
-                  height: 12,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: user.isActive ? Colors.green : Colors.red,
-                  ),
-                ),
+                // حالة التحقق
+                Icon(user.isVerified ? Icons.verified : Icons.verified_outlined,
+                    color: user.isVerified ? Colors.green : Colors.grey,
+                    size: 22),
               ],
             ),
             const SizedBox(height: 16),
@@ -90,57 +85,32 @@ class UserCard extends StatelessWidget {
             const SizedBox(height: 8),
             _buildInfoRow(Icons.phone, user.phone),
             const SizedBox(height: 8),
-            if (user.address != null) ...[
-              _buildInfoRow(Icons.location_on, user.address!),
-              const SizedBox(height: 8),
-            ],
 
-            // الإحصائيات
+            // نوع الحساب وتاريخ الانضمام
             Row(
               children: [
-                Expanded(
-                  child: _buildStatItem(
-                    'المنتجات',
-                    user.productsCount.toString(),
-                    Icons.store,
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: user.isSeller ? Colors.blue[50] : Colors.grey[200],
+                    borderRadius: BorderRadius.circular(10),
                   ),
+                  child: Text(user.accountTypeDisplay,
+                      style: TextStyle(
+                          color: user.accountTypeColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12)),
                 ),
-                Expanded(
-                  child: _buildStatItem(
-                    'الطلبات',
-                    user.ordersCount.toString(),
-                    Icons.shopping_cart,
-                  ),
-                ),
-                Expanded(
-                  child: _buildStatItem(
-                    'التقييم',
-                    user.rating.toStringAsFixed(1),
-                    Icons.star,
-                    color: Colors.amber,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-
-            // تاريخ الانضمام
-            Row(
-              children: [
-                const Icon(Icons.calendar_today, size: 16, color: Colors.grey),
                 const SizedBox(width: 8),
+                Icon(Icons.calendar_today, size: 15, color: Colors.grey[600]),
+                const SizedBox(width: 3),
                 Text(
-                  'انضم في: ${_formatDate(user.joinDate)}',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
-                ),
+                    '${user.joinDate.day}/${user.joinDate.month}/${user.joinDate.year}',
+                    style: const TextStyle(fontSize: 12, color: Colors.grey)),
               ],
             ),
-            const SizedBox(height: 12),
-
-            // أزرار التحكم
+            const Spacer(),
             Row(
               children: [
                 Expanded(
@@ -148,41 +118,32 @@ class UserCard extends StatelessWidget {
                     onPressed: onEdit,
                     icon: const Icon(Icons.edit, size: 16),
                     label: const Text('تعديل'),
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                    ),
                   ),
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: onToggleStatus,
-                    icon: Icon(
-                      user.isActive ? Icons.block : Icons.check_circle,
-                      size: 16,
-                    ),
-                    label: Text(user.isActive ? 'إلغاء التفعيل' : 'تفعيل'),
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      foregroundColor:
-                          user.isActive ? Colors.red : Colors.green,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 6),
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: onDelete,
                     icon: const Icon(Icons.delete, size: 16),
                     label: const Text('حذف'),
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      foregroundColor: Colors.red,
-                    ),
+                    style:
+                        OutlinedButton.styleFrom(foregroundColor: Colors.red),
                   ),
                 ),
               ],
             ),
+            if (onUpgrade != null) ...[
+              const SizedBox(height: 6),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: onUpgrade,
+                  icon: const Icon(Icons.upgrade, size: 16),
+                  label: const Text('ترقية إلى بائع'),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                ),
+              ),
+            ],
           ],
         ),
       ),
@@ -207,34 +168,5 @@ class UserCard extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  Widget _buildStatItem(String label, String value, IconData icon,
-      {Color? color}) {
-    return Column(
-      children: [
-        Icon(icon, size: 16, color: color ?? Colors.grey),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF193A6B),
-          ),
-        ),
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 10,
-            color: Colors.grey,
-          ),
-        ),
-      ],
-    );
-  }
-
-  String _formatDate(DateTime date) {
-    return '${date.day}/${date.month}/${date.year}';
   }
 }
