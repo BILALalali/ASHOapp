@@ -9,8 +9,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   shared:
     path: ../shared
+  image_picker: ^1.0.7
 
 dev_dependencies:
   flutter_test:
